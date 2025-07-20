@@ -38,7 +38,7 @@ kubeadm init
 
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.2/manifests/calico.yaml
 
-Note: for kali we need to change cni-bin-dir in calico.yml. So first download it, edit it and then run kubectl apply
+Note: For Kali, we need to change the cni-bin-dir in calico.yml. So first download it, edit it and then run kubectl apply
 Change this: path: /opt/cni/bin
 To this: path: /usr/lib/cni
 
@@ -48,5 +48,17 @@ kubectl get nodes -o wide
 
 kubectl get event -w
 
+# Allow provisioning of pods in control plane node
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+
+#Static assignment of IP address. Add below in /etc/network/interfaces
+auto eth0
+iface eth0 inet static
+    address 192.168.227.128
+    netmask 255.255.255.0
+    gateway 192.168.227.2
+    dns-nameservers 8.8.8.8 8.8.4.4
+
+sudo systemctl restart networking
+sudo nmcli device set eth0 managed no
 
