@@ -1,1 +1,103 @@
++--------------------+       grants         +------------------------------+
+|    User or         |--------------------->|      RoleBinding             |
+| ServiceAccount     |                      +------------------------------+
++--------------------+                             |
+                                                   |
+                                                 attaches
+                                                   |
+                                             +----------+
+                                             |  Role    |
+                                             +----------+
+                                                 |
+                                          permissions for
+                                                 |
+                                        +-------------------+
+                                        | Resources (Pods,  |
+                                        | Deployments, etc.)|
+                                        +-------------------+
+
+
++---------+         +-----------------------+         +-------------+
+|  User   |-------> | ClusterRoleBinding    |-------->| ClusterRole |
++---------+         +-----------------------+         +-------------+
+
+
+
++--------------------- Kubernetes Cluster ----------------------+
+| +----------+  +----------+  +---------+   +----------+       |
+| | hrapp    |  | website  |  |  DB     |   | default  |       |
+| |namespace |  |namespace |  |namespace|   |namespace |       |
+| +----------+  +----------+  +---------+   +----------+       |
+|                             +--------------+                 |
+|                             | kube-system  |                 |
+|                             |  namespace   |                 |
+|                             +--------------+                 |
++--------------------------------------------------------------+
+
+       |                |                      |
+   +---|--------+   +---|----+           +-----|-----+
+   | Engineer/  |   | App    |           | Database  |
+   |   Admin    |   |  Dev   |           | Managers  |
+   +------------+   +--------+           +-----------+
+       |                     |                 |
+       |                     |                 |
+       |                +----v----+      +-----v-----+
+       |                | website |      |    DB     |
+       |                |namespace|      | namespace |
+       |                +---------+      +-----------+
+       |                                     
+       +-----------------------------------+
+                 (access to all)
+
+
+Legend:
+- Each box inside the cluster = a namespace: hrap, website, database, default, kube-system.
+- Roles on the bottom control access:
+  - Engineer/Admin: full cluster access (all namespaces)
+  - App Dev: access to website namespace
+  - Database Managers: access to database namespace
+
+
+#identities in k8s
+Users
+Groups
+ServiceAccounts
+
+
+#Creating a user
+openssl genrsa -out golu.key 2048
+openssl req -new -key golu.key -out golu.csr -subj '/CN=golu/O=databases'
+openssl x509 -req -in golu.csr -CAcreateserial -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -out golu.crt -days 365
+
+# We should be having 3 files now
+-rw-r--r--  1 root root 1111 Jul 20 17:18 golu.crt
+-rw-r--r--  1 root root  911 Jul 20 17:08 golu.csr
+-rw-------  1 root root 1704 Jul 20 17:01 golu.key
+
+# Creating a kubeconfig file for user golu
+kubectl --kubeconfig=golu.config config set-cluster goluCluster --certificate-authority=/etc/kubernetes/pki/ca.crt --server=https://192.168.227.128:6443 --embed-certs
+
+#Set creds for user in config
+kubectl --kubeconfig=golu.config config set-credentials golu --client-certificate=/root/Desktop/golu.crt --client-key=/root/Desktop/golu.key --embed-certs
+
+#Create context
+kubectl --kubeconfig=golu.config config set-context goluContext --cluster golucluster --user golu --namespace databases
+
+kubectl --kubeconfig=golu.config config use-context goluContext
+
+#Verify connection using config file
+kubectl --kubeconfig=golu.config version
+
+
+# The next step would be to assign permissions to user golu using role and role bindings
+
+#Creating a role. The namespace must exist before running! (kubectl create ns databases)
+kubectl --namespace databases create role DatabaseManager --verb=get,list,create,delete --resource=pods
+
+#Creating a Role Binding
+kubectl --namespace databases create rolebinding DatabaseManagerBinding --user=golu --role=DatabaseManager
+
+kubectl --kubeconfig=golu.config get pods --namespace databases
+
+
 
