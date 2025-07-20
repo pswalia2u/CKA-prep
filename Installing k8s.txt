@@ -1,0 +1,52 @@
+modprobe overlay
+modprobe br_netfilter
+
+tee /etc/modules-load.d/k8s.conf <<EOF
+overlay
+br_netfilter
+EOF
+
+
+tee /etc/sysctl.d/kubernetes.conf <<EOT
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOT
+
+
+apt update -y && apt-get install -y apt-transport-https ca-certificates curl gpg -y
+
+apt install docker.io -y
+
+mkdir -p /etc/containerd && containerd config default | tee /etc/containerd/config.toml
+
+sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+
+systemctl restart containerd
+
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+apt update -y && apt-get install -y kubelet kubeadm kubectl
+
+apt-mark hold kubelet kubeadm kubectl
+
+shutdown -r now
+
+kubeadm init
+
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.2/manifests/calico.yaml
+
+Note: for kali we need to change cni-bin-dir in calico.yml. So first download it, edit it and then run kubectl apply
+Change this: path: /opt/cni/bin
+To this: path: /usr/lib/cni
+
+kubectl get pods --all-namespaces
+
+kubectl get nodes -o wide
+
+kubectl get event -w
+
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+
