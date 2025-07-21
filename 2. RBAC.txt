@@ -70,11 +70,11 @@ openssl req -new -key plssub.key -out plssub.csr -subj '/CN=plssub/O=databases'
 openssl x509 -req -in plssub.csr -CAcreateserial -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -out plssub.crt -days 1000
 
 # We should be having 3 files now
--rw-r--r--  1 root root 1111 Jul 20 17:18 golu.crt
--rw-r--r--  1 root root  911 Jul 20 17:08 golu.csr
--rw-------  1 root root 1704 Jul 20 17:01 golu.key
+-rw-r--r--  1 root root 1115 Jul 21 16:57 plssub.crt
+-rw-r--r--  1 root root  915 Jul 21 16:57 plssub.csr
+-rw-------  1 root root 1704 Jul 21 16:56 plssub.key
 
-# Creating a kubeconfig file for user golu
+# Creating a kubeconfig file for user plssub
 kubectl --kubeconfig=plssub.config config set-cluster plssubCluster
 kubectl --kubeconfig=plssub.config config set-cluster plssubCluster --server=https://192.168.227.128:6443
 kubectl --kubeconfig=plssub.config config set-cluster plssubCluster  --certificate-authority=/etc/kubernetes/pki/ca.crt --embed-certs
@@ -88,7 +88,7 @@ kubectl --kubeconfig=plssub.config config set-context plssubContext --cluster pl
 kubectl --kubeconfig=plssub.config config use-context plssubContext
 
 #Verify connection using config file
-kubectl --kubeconfig=golu.config version
+kubectl --kubeconfig=plssub.config version
 
 
 # The next step would be to assign permissions to user golu using role and role bindings
@@ -97,9 +97,8 @@ kubectl --kubeconfig=golu.config version
 kubectl --namespace databases create role DatabaseManager --verb=get,list,create,delete --resource=pods
 
 #Creating a Role Binding
-kubectl --namespace databases create rolebinding DatabaseManagerBinding --user=golu --role=DatabaseManager
+kubectl --namespace databases create rolebinding DatabaseManagerBinding --user=plssub --role=DatabaseManager
 
-kubectl --kubeconfig=golu.config get pods --namespace databases
-
+kubectl --kubeconfig=plssub.config get pods --namespace databases
 
 
