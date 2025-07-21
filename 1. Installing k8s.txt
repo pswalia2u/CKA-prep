@@ -49,7 +49,9 @@ kubectl get nodes -o wide
 kubectl get event -w
 
 # Allow provisioning of pods in control plane node
-kubectl create namespace
+kubectl create namespace databases
+kubectl run my-nginx-pod --image=nginx --namespace databases
+kubectl describe pod my-nginx-pod  --namespace databases
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
 #Static assignment of IP address. Add below in /etc/network/interfaces
