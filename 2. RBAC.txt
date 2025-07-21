@@ -65,9 +65,9 @@ ServiceAccounts
 
 
 #Creating a user
-openssl genrsa -out golu.key 2048
-openssl req -new -key golu.key -out golu.csr -subj '/CN=golu/O=databases'
-openssl x509 -req -in golu.csr -CAcreateserial -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -out golu.crt -days 365
+openssl genrsa -out plssub.key 2048
+openssl req -new -key plssub.key -out plssub.csr -subj '/CN=plssub/O=databases' 
+openssl x509 -req -in plssub.csr -CAcreateserial -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -out plssub.crt -days 1000
 
 # We should be having 3 files now
 -rw-r--r--  1 root root 1111 Jul 20 17:18 golu.crt
@@ -75,15 +75,17 @@ openssl x509 -req -in golu.csr -CAcreateserial -CA /etc/kubernetes/pki/ca.crt -C
 -rw-------  1 root root 1704 Jul 20 17:01 golu.key
 
 # Creating a kubeconfig file for user golu
-kubectl --kubeconfig=golu.config config set-cluster goluCluster --certificate-authority=/etc/kubernetes/pki/ca.crt --server=https://192.168.227.128:6443 --embed-certs
+kubectl --kubeconfig=plssub.config config set-cluster plssubCluster
+kubectl --kubeconfig=plssub.config config set-cluster plssubCluster --server=https://192.168.227.128:6443
+kubectl --kubeconfig=plssub.config config set-cluster plssubCluster  --certificate-authority=/etc/kubernetes/pki/ca.crt --embed-certs
 
 #Set creds for user in config
-kubectl --kubeconfig=golu.config config set-credentials golu --client-certificate=/root/Desktop/golu.crt --client-key=/root/Desktop/golu.key --embed-certs
+kubectl --kubeconfig=plssub.config config set-credentials plssub --client-certificate=/root/Desktop/plssub.crt --client-key=/root/Desktop/plssub.key --embed-certs --username plssub
 
 #Create context
-kubectl --kubeconfig=golu.config config set-context goluContext --cluster golucluster --user golu --namespace databases
+kubectl --kubeconfig=plssub.config config set-context plssubContext --cluster plssubCluster --user plssub --namespace databases
 
-kubectl --kubeconfig=golu.config config use-context goluContext
+kubectl --kubeconfig=plssub.config config use-context plssubContext
 
 #Verify connection using config file
 kubectl --kubeconfig=golu.config version
