@@ -1,1 +1,26 @@
 kubectl api-versions
+kubectl api-resources
+
+# Creating a NodePort Service
+#Staring pods
+kubectl run --image nginx --port 80 nginx1
+kubectl run --image nginx --port 80 nginx2
+#Labelling pods
+kubectl label pod/nginx1 name=myapp
+kubectl label pod/nginx2 name=myapp
+
+#Nodeport Service Manifest. After applying this, We would be able to access nginx pods from node IP on port 32287(by the way netstat/ss does not shows port listening)
+apiVersion: v1
+kind: Service
+metadata:
+  name: mynodeportsv
+spec:
+  type: NodePort
+  selector:
+    name: myapp
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 32287  # Must be in range 30000–32767
+
+
