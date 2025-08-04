@@ -45,6 +45,9 @@ kubectl create service loadbalancer apnilbservice --tcp=36010:80
 kubectl set selector service/apnilbservice type=loadbalancer
 
 
+#Core DNS
+#Getting configuration of CoreDNS
+kubectl --namespace kube-system describe configmap/coredns
 
 
 
