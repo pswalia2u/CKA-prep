@@ -49,8 +49,11 @@ kubectl set selector service/apnilbservice type=loadbalancer
 #Getting configuration of CoreDNS
 kubectl --namespace kube-system describe configmap/coredns
 
+#DNS requests are handled by coredns pods, which are behind a ClusterIP service
+kubectl describe service/kube-dns --namespace kube-system
+nslookup google.com
 
+kubectl scale deployment.apps/coredns --replicas=3 --namespace kube-system 
 
-
-
+#
 
