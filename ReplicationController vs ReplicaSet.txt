@@ -1,0 +1,1 @@
+Selector is essential in ReplicaSet whereas in replicationController it not required.
