@@ -55,5 +55,6 @@ nslookup google.com
 
 kubectl scale deployment.apps/coredns --replicas=3 --namespace kube-system 
 
-#
+#Liveness, Readiness and Startup Probes
+
 
