@@ -2,3 +2,7 @@
 Deployment is like a manager for Replicas.
 Replica is like a manager for pods.
 Pod is like a manager for containers
+
+
+#Creating yaml
+kubectl create deployment --image=nginx nginx --replicas=4 --dry-run=client -o yaml > nginx-deployment.yaml
