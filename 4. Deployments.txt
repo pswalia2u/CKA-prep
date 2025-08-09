@@ -1,0 +1,4 @@
+#Deployments, Replicas, Pods
+Deployment is like a manager for Replicas.
+Replica is like a manager for pods.
+Pod is like a manager for containers
