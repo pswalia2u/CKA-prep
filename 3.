@@ -43,6 +43,7 @@ curl 10.98.119.92
 # Creating a loadbalancer service
 kubectl create service loadbalancer apnilbservice --tcp=36010:80
 kubectl set selector service/apnilbservice type=loadbalancer
+kubectl logs --follow pod/trevorwebapp-8cb867b65-b8sgr
 
 
 #Core DNS
