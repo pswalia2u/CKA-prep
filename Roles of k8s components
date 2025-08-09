@@ -1,0 +1,8 @@
+kube-scheduler- Decides which pod will be deployed where(i mean, in which node). This decision is based on the resource requirements of the pod and the availability of resources on a node.
+Config file location: /etc/kubernetes/manifests/kube-scheduler.yaml
+
+Etcd- Database(runs at port 2379)
+
+kubelet- Deploys pods on nodes. Kubelet only runs on worker nodes.
+
+kube-proxy- Runs on each node in k8s including control plane node. It enables services (like databases) to reach the database pod.
