@@ -1,0 +1,5 @@
+#Requests_and_Limits.txt
+Resources mentioned in requests section gaurntees the specified resources will be available to the pod. Kube-scheduler looks for nodes with sufficient resources before deploying pods with resources mentioned in the requests section.
+
+#Resource Quotas
+It is for total memory/CPU which can be used by pods at namespace level.e.g if we set this to 5GB Memory for default namespace, all the pods running in default namespace will not be able to consume more than 5gb ram.
