@@ -5,4 +5,4 @@ Etcd- Database(runs at port 2379)
 
 kubelet- Deploys pods on nodes. Kubelet only runs on worker nodes.
 
-kube-proxy- Runs on each node in k8s including control plane node. It enables services (like databases) to reach the database pod.
+kube-proxy- Runs on each node in k8s including control plane node. It enables services (like databases) to reach the database pod. It is deployed as daemonset.
