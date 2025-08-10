@@ -1,0 +1,14 @@
+#Taint is applied in nodes.(Pod can go to any node which adheres to its toleration settings, Basically restriction is only applied to nodes)
+kubectl taint nodes node1 app=blue:NoSchedule
+
+#Toleration is applied on pods.
+
+#NodeSelector is a feture allow to run a pod on specific node.
+kubectl label node node01 size=large
+
+#In pod definition, one need to specify NodeSelector option in spec.
+spec:
+  NodeSelector:
+    size: large
+
+#Node Affinity allows adding more options like size medium OR Large, size Large and Small
