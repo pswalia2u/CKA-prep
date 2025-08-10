@@ -3,6 +3,7 @@ Config file location: /etc/kubernetes/manifests/kube-scheduler.yaml
 
 Etcd- Database(runs at port 2379)
 
-kubelet- Deploys pods on nodes. Kubelet only runs on worker nodes.
+kubelet- Deploys pods on nodes. Kubelet only runs on worker nodes. Location of directory for pod manifests is "/etc/kubernetes/manifests" 
+Config file is configured in "/var/lib/kubelet/config.yaml" if kubeadm is used to deploy cluster.
 
 kube-proxy- Runs on each node in k8s including control plane node. It enables services (like databases) to reach the database pod. It is deployed as daemonset.
