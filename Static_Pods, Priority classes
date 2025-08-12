@@ -1,0 +1,3 @@
+#kubectl get priorityclass
+Priority classes are not lined to any namespace. They are global.
+If no priorityclass is assigned to a pod by default it will be 0.
