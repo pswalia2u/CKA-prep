@@ -1,3 +1,12 @@
 #kubectl get priorityclass
 Priority classes are not lined to any namespace. They are global.
 If no priorityclass is assigned to a pod by default it will be 0.
+
+Phases of pod scheduling:
+1. Scheduling Queue- Pods are arraged according to priority class attached to them.(Sorting)
+
+2. Filtering - Nodes that do not match the resource requirement of the pod are filtered out.
+
+3. Scoring of nodes: Nodes are scored based on the resources that will be left after provisioning of pod. More resources left ==> more score
+
+4. Binding pod to node
