@@ -1,0 +1,12 @@
+#Deploy the Metrics Server
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+kubectl top node
+
+kubectl top pods
+
+#logs
+kubectl logs -f <pod_name> <container_name> #Container name is optional, it is required if pod is running more than one container.
+
+
+
