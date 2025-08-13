@@ -1,0 +1,11 @@
+Command from kubectl ==> Authentication ==> Authorization ==> Admission Controllers ==> Create Pod
+
+kubectl exec pod/kube-apiserver-node -n kube-system -- kube-apiserver -h | grep -i "enable-admission-plugins"
+
+Types of AdmissionControllers-
+1. Mutating(It changes the config before operation) 2. Validating(It vlidates conditions are met before operation)
+
+In lab we create a Validating Admissioncontroller (checking securitycontext if run as root is specified or not)
+https://learn.kodekloud.com/user/courses/udemy-labs-certified-kubernetes-administrator-with-practice-tests/module/8e4261a6-bac4-4dfe-82c5-0a1bb8c527da/lesson/1f3b6bb8-1b60-486a-b7da-08c8c33d8508
+
+
