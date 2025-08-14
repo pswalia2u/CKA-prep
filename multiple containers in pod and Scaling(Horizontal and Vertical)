@@ -1,4 +1,14 @@
 Init-Containers
 
-Sidecar(init container which always run)
+Sidecar(init container that always runs)
 
+Approaches for scaling:
+1. Scaling Cluster infra(we don't do vertical scaling usually)
+a. manual- using kubeadm join <new node>
+b. automated- using autoscaler
+
+2. Scaling workloads
+a. HPA (Horizontal Pod Autoscaler)- 
+kubectl autoscale deployment my-app --cpu-percent=50 --min=1 --max=10
+kubectl get hpa
+b. VPA (Vertical Pod Autoscaler)
