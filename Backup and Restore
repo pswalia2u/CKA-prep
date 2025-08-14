@@ -1,0 +1,24 @@
+kubectl get all --all-namespaces -o yaml > All-services.yaml
+
+#Backuo etcd-
+Etcd directory can be backed up which was specified while running the etcd service.
+ps -ef | grep etcd | grep -i data-dir
+/var/lib/etcd
+
+Etc db can also be backed up using etcd clinet:
+ETCDCTL_API=3 etcdctl snapshot save snapshot.db
+e.gETCDCTL_API=3 etcdctl snapshot save /opt/snapshot-pre-boot.db --cacert=/etc/
+kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key
+
+ETCDCTL_API=3 etcdctl snapshot status snapshot.db
+
+#Restoring etcd backup
+service kube-apiserver stop
+systemctl stop kube-apiserver
+
+# new bk folder(/var/lib/etcd-from-backup-folder) will be created
+ETCDCTL_API=3 etcdctl snapshot restore snapshot.db --data-dir=/var/lib/etcd-from-backup
+then edit the vim /etc/kubernetes/manifests/etcd.yaml to change --data-dir to point to new dir /var/lib/etcd-from-backup
+
+systemctl start etcd
+systemctl start kube-apiserver
