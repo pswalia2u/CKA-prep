@@ -1,0 +1,8 @@
+kubectl drain node01(moves pods to other nodes and cordons the current node01)
+kubectl uncordon node01
+kubectl cordon node01 (makes sure new pids cannot be scheduled on this node)
+
+#cluster upgade using kueadm
+apt upgrade kubeadm -y
+kubeadm upgrade plan
+kubeadm upgrade apply <version>
