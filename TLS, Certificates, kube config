@@ -1,0 +1,7 @@
+kubectl get csr/<csr-name>
+kubectl delete csr/<csr-name>
+
+kubctl certificate approve <csr-name>
+
+
+kubectl config view
