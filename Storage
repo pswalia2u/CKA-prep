@@ -1,0 +1,73 @@
+docker run --mount type=bind,source=/tmp/mount-me,target=/mnt/inside mysql
+
+Storage Driver
+AUFS,overlay2 etc
+
+Volume Driver
+
+Volumes(for node) and Persistent Volumes(Works within cluster)
+
+Admin creates Persistent Volumes, and user creates Persistent Volume Claims to claim some storage space from Persistent Volume.
+
+There is one to one relationship bw Persistent Volume and Persistent Volume Claim, means only one claim can use one volume at a time and vise versa.
+
+#To delete PVC
+kubectl delete persistentVolumeClaim "myclaim"
+
+
+Q: Create a Persistent Volume with the given specification.
+
+Volume Name: pv-log
+
+Storage: 100Mi
+
+Access Modes: ReadWriteMany
+
+Host Path: /pv/log
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-log
+spec:
+  capacity:
+    storage: 100Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /pv/log
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - example-node
+
+Reclaim Policy: Retain
+
+
+Q. Let us claim some of that storage for our application. Create a Persistent Volume Claim with the given specification.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-log-1
+spec:
+  storageClassName: "" # Empty string must be explicitly set otherwise default StorageClass will be set
+  volumeName: pv-log
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Mi
+
+
+Q.Update the webapp pod to use the persistent volume claim as its storage.
+
+Replace hostPath configured earlier with the newly created PersistentVolumeClaim.
+
+
