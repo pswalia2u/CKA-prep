@@ -1,0 +1,115 @@
+cni dirs:
+/opt/cni/bin
+
+/etc/cni
+
+All these ("Cluster CIDR(nodes)", "Service CIDR", and "Pod network CIDR") should have different IP ranges
+
+#Fidning IP ranges-
+Cluster CIDR(nodes) 
+
+Service CIDR
+(look for "--service-cluster-ip-range" kubectl describe pod/kube-controller-manager-controlplane -n kube-system 
+OR
+kubectl describe pod/kube-apiserver-controlplane -n kube-system
+)
+
+Pod network CIDR
+(Look for  "--cluster-cidr" kubectl describe pod/kube-controller-manager-controlplane -n kube-system)
+
+Services like nodeport and clusterip are virtual objects(meaning they are just iptable rules)
+kube-proxy manages these.
+logs for kubeproxy ==> /var/log/kube-proxy.log OR kubectl logs pod/kube-proxy-g4bx6 -n kube-system (check this when you create service)
+
+
+DNS in k8s:
+if we want to access a service in different namespace then domian will be <service name>.<namespace name in which service exists> 
+OR 
+<service name>.<namespace name in which service exists>.svc.cluster.local
+
+
+
+##INGRESS - A Layer 7 load balancer built into k8s
+Components: 1. Ingress Controller 2.Ingress Resource
+ingress controller component, which can be nginx, traefik, HA proxy, Istio etc.
+Ingress controller requires: A Deployment, Service, Configmap, ServiceAccount
+
+Ingress Resource- These are like nginx conf file. They are deployed as manifests file(It can have multiple rules).
+kubectl describe ingress <ingress name>
+kubectl create ingress <ingress name>
+
+
+#Ingress Resource
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  creationTimestamp: "2025-08-15T21:01:10Z"
+  generation: 3
+  name: critical-ingress
+  namespace: critical-space
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: pay-service
+            port:
+              number: 8282
+        path: /pay
+        pathType: Prefix
+status:
+  loadBalancer:
+    ingress:
+    - ip: 172.20.160.51
+
+
+One more Example ingress resource: kubectl create ingress apna-ingress \
+  --default-backend='default-http-backend:80' \
+  --rule="/wear=wear-service:8080" \
+  --rule="/watch=video-service:8080" \
+  --annotation='nginx.ingress.kubernetes.io/rewrite-target=/' \
+  -n app-space \
+  --dry-run=client -o yaml
+
+--------------------------------
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  creationTimestamp: null
+  name: apna-ingress
+  namespace: app-space
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  defaultBackend:
+    service:
+      name: default-http-backend
+      port:
+        number: 80
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: wear-service
+            port:
+              number: 8080
+        path: /wear
+        pathType: Exact
+      - backend:
+          service:
+            name: video-service
+            port:
+              number: 8080
+        path: /watch
+        pathType: Exact
+status:
+  loadBalancer: {}
+
+
